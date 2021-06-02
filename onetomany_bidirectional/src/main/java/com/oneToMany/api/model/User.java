@@ -1,5 +1,6 @@
 package com.oneToMany.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,6 +35,7 @@ public class User extends AuditModel {
   @Size(min = 8, max = 32)
   private String password;
   
+  @JsonIgnore
   @ManyToOne
   private Role role;
   
