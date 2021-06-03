@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 @RestController
 @RequestMapping(value = "/api/role")
@@ -18,40 +16,32 @@ public class RoleController {
   @Autowired
   private RoleService roleService;
   
-  @Autowired
-  private RoleRepository roleRepository;
   
   @PostMapping("/create")
   public ResponseEntity<Object> createRoleWithUser(@RequestBody Role role) {
 	return roleService.addRoleWithUser(role);
   }
   
-  @GetMapping("/rolelist")
-  public List<Role> getListOfRoles() {
-	return roleRepository.findAll();
+  @GetMapping("/list")
+  public ResponseEntity<?> getListOfRoles() {
+	return roleService.readListOfRole();
   }
   
   @GetMapping("/{id}")
-  public ResponseEntity<Role> getRoleByID(@PathVariable(value = "id") long id) throws DataNotFoundException {
-	Role role = roleRepository.findById(id).orElseThrow(() ->
-			new DataNotFoundException("Given id not found in Database:  " + id));
-	
-	return ResponseEntity.ok(role);
+  public ResponseEntity<?> getRoleByID(@PathVariable(value = "id") long id)
+		  throws DataNotFoundException {
+	return roleService.readRole(id);
   }
   
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<Object> deleteRole(@PathVariable(value = "id") long id) {
-	
-	if (roleRepository.findById(id).isPresent()) {
-	  roleRepository.deleteById(id);
-	  if (roleRepository.findById(id).isPresent()) {
-		return ResponseEntity.unprocessableEntity()
-				.body("Failed to delete given id: " + id);
-	  } else
-		return ResponseEntity.ok().body("Successfully Deleted ID: " + id);
-	} else
-	  return ResponseEntity.unprocessableEntity().body("No Record found");
+  public ResponseEntity<?> deleteRole(@PathVariable(value = "id") long id) {
+	return roleService.deleteRoleByID(id);
   }
   
+  @PutMapping("update/{id}")
+  public ResponseEntity<?> updateRole(@PathVariable(value = "id")long id,
+									  @RequestBody Role role) throws DataNotFoundException {
+    return roleService.updateRoleByID(id,role);
+  }
   
 }
